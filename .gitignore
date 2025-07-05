@@ -18,6 +18,7 @@ instance/
 
 # Data files
 data/blog_posts.json
+strava_cache.json
 
 # Uploads
 static/uploads/*
