@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <div class="container">
+        <!-- Animated Greeting -->
+        <div class="hero-greeting mb-3">
+            <h1 class="mb-3">
+                Greetings, I'm Blake Ridgway
+                <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif"
+                     width="35" height="35"
+                     alt="Waving hand"
+                     class="wave-animation">
+            </h1>
+            <div class="hero-tagline">
+                <span class="badge bg-primary me-2">Systems Administrator</span>
+                <span class="badge bg-success me-2">Cybersecurity Enthusiast</span>
+                <span class="badge bg-info me-2">Linux & Open Source Advocate</span>
+                <span class="badge bg-warning">Ultra Endurance Cyclist</span>
+            </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="hero-mission my-4">
+            <p class="lead mb-3">
+                As a Systems Administrator, my focus is on ensuring the stability, integrity, and performance of critical IT infrastructure.
+                Through hands-on experience managing Linux, AWS, and Azure environments, I've learned that
+                <strong class="text-light">true system stability is impossible without robust security</strong>.
+            </p>
+        </div>
+    </div>
+</div>
+
+    <!-- Personal Projects -->
+    <div class="text-center mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg bg-gradient">
+                    <div class="card-body text-white p-4">
+                        <h3 class="card-title mb-3">🚴 Personal Projects</h3>
+                        <p class="card-text mb-4">
+                            Beyond my professional endeavors, I'm an avid cyclist and open-source enthusiast.
+                            I'm currently developing a platform to help cyclists train smarter, combining
+                            data-driven insights with a strong emphasis on
+                            <strong>end-to-end data encryption, user privacy, and secure development practices.</strong>
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="/biking" class="btn btn-light">
+                                <i class="fas fa-bicycle me-2"></i>View My Cycling Stats
+                            </a>
+                            <a href="/blog" class="btn btn-outline-light">
+                                <i class="fas fa-blog me-2"></i>Read My Blog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

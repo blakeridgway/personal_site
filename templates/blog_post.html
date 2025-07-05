@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Blake Ridgway{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <article>
+            <header class="mb-4">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('index') }}" class="text-decoration-none">
+                                <i class="fas fa-home me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('blog') }}" class="text-decoration-none">
+                                <i class="fas fa-blog me-1"></i>Blog
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ post.title }}</li>
+                    </ol>
+                </nav>
+
+                <h1 class="display-5 mb-3">{{ post.title }}</h1>
+
+                <div class="post-meta mb-4 p-3 bg-light rounded-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2 mb-md-0">
+                                <img src="{{ url_for('static', filename='images/profile.jpg') }}"
+                                     alt="Blake Ridgway"
+                                     class="rounded-circle me-3"
+                                     width="40" height="40">
+                                <div>
+                                    <div class="fw-bold">Blake Ridgway</div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>{{ post.date }}
+                                        <i class="fas fa-clock ms-3 me-1"></i>~5 min read
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-primary fs-6 px-3 py-2">
+                                <i class="fas fa-tag me-1"></i>{{ post.category }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="blog-content">
+                <div class="content-wrapper p-4 bg-white rounded-3 shadow-sm">
+                    {{ post.content|safe }}
+                </div>
+            </div>
+
+            <!-- Post Tags (if available) -->
+            {% if post.tags %}
+            <div class="post-tags mt-4">
+                <h6 class="mb-2">Tags:</h6>
+                {% for tag in post.tags %}
+                <span class="badge bg-light text-dark me-2 mb-2">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </article>
+
+        <hr class="my-5">
+
+        <!-- Navigation and Actions -->
+        <div class="post-actions">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <a href="{{ url_for('blog') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Blog
+                    </a>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <button class="btn btn-outline-success me-2" onclick="sharePost()">
+                        <i class="fas fa-share-alt me-2"></i>Share Post
+                    </button>
+                    <button class="btn btn-outline-info" onclick="printPost()">
+                        <i class="fas fa-print me-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Table of Contents -->
+
+
+        <!-- Post Information -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Post Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="detail-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-tag text-primary me-2"></i>Category:</span>
+                        <span class="badge bg-primary">{{ post.category }}</span>
+                    </div>
+                </div>
+                <div class="detail-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-calendar-alt text-success me-2"></i>Published:</span>
+                        <span>{{ post.date }}</span>
+                    </div>
+                </div>
+                <div class="detail-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-clock text-warning me-2"></i>Reading Time:</span>
+                        <span>~5 min</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-user text-info me-2"></i>Author:</span>
+                        <span>Blake Ridgway</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share This Post -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-share-alt me-2"></i>Share This Post</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="sharePost()">
+                        <i class="fas fa-link me-2"></i>Copy Link
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="shareTwitter()">
+                        <i class="fab fa-twitter me-2"></i>Share on Twitter
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="shareLinkedIn()">
+                        <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Author Bio -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>About the Author</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename='images/profile.jpg') }}"
+                     alt="Blake Ridgway"
+                     class="rounded-circle mb-3"
+                     width="80" height="80">
+                <h6>Blake Ridgway</h6>
+                <p class="small text-muted mb-3">
+                    Systems Administrator & Cybersecurity Enthusiast passionate about secure infrastructure and continuous learning.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user me-1"></i>About
+                    </a>
+                    <a href="https://gitlab.com/blakeridgway/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
+                        <i class="fab fa-gitlab me-1"></i>GitLab
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sharePost() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ post.title }}',
+            text: 'Check out this blog post by Blake Ridgway',
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('Link copied to clipboard!');
+        }).catch(() => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = window.location.href;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast('Link copied to clipboard!');
+        });
+    }
+}
+
+function shareTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('{{ post.title }} by @BlakeRidgway');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+}
+
+function shareLinkedIn() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+}
+
+function printPost() {
+    window.print();
+}
+
+function showToast(message) {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = 'alert alert-success position-fixed';
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+    toast.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Smooth scrolling for table of contents
+document.querySelectorAll('.toc a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+</script>
+
+<style>
+.blog-content {
+    line-height: 1.8;
+}
+
+.blog-content h2, .blog-content h3, .blog-content h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.blog-content p {
+    margin-bottom: 1.5rem;
+}
+
+.blog-content code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+}
+
+.blog-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+}
+
+.blog-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #6c757d;
+}
+
+@media print {
+    .col-md-4 {
+        display: none;
+    }
+    .col-md-8 {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

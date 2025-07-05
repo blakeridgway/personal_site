@@ -1,0 +1,156 @@
+/* Wave animation for emoji */
+.wave-animation {
+  animation: wave 2s infinite;
+  transform-origin: 70% 70%;
+}
+
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Hero section styles - MUCH SMALLER */
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 2rem 0; /* Much smaller padding */
+  margin-bottom: 2rem; /* Add some space below */
+}
+
+.hero-section .lead {
+  font-size: 1.1rem;
+  font-weight: 300;
+  margin-bottom: 0;
+}
+
+.hero-section h1 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 2.5rem; /* Control the heading size */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section .lead {
+    font-size: 1rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem; /* Smaller on mobile */
+  }
+
+  .hero-section {
+    padding: 1.5rem 0; /* Even less padding on mobile */
+  }
+}
+
+/* Rest of your styles... */
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skill-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.tech-icons img {
+  transition: transform 0.3s ease;
+}
+
+.tech-icons img:hover {
+  transform: scale(1.2);
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  margin-top: auto;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.rounded-circle {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Social Links Styling */
+.social-links {
+    font-size: 0; /* Remove whitespace between inline elements */
+}
+
+.social-link {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+    margin-right: 1rem;
+    font-size: 1.25rem; /* Reset font size for icons */
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-link:last-child {
+    margin-right: 0;
+}
+
+.social-link:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.social-link i {
+    display: block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+}
+
+/* Alternative cleaner approach */
+.social-links-flex {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .social-links-flex {
+        justify-content: flex-end;
+    }
+}

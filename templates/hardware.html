@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Hardware - Blake Ridgway{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>My Hardware Setup</h1>
+        <p class="lead">A showcase of my current tech setup and hardware projects focused on systems administration, cybersecurity, and development.</p>
+
+        <h3>Current PC Build</h3>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-desktop me-2"></i>Main Workstation</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fab fa-fedora text-primary me-2"></i>OS:</strong> Fedora 42 Workstation
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-microchip text-info me-2"></i>CPU:</strong> Intel Core i9-12900K
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-tv text-success me-2"></i>GPU:</strong> Intel Arc A770
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-memory text-warning me-2"></i>RAM:</strong> Corsair LPX 64GB (3200 MHz)
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-hdd text-danger me-2"></i>NVMe:</strong> Samsung 980 PRO 1TB
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-hdd text-secondary me-2"></i>SSD:</strong> Samsung 860 EVO 500GB
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-hdd text-secondary me-2"></i>HDD:</strong> WD Green 1TB
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-hdd text-secondary me-2"></i>Storage:</strong> Seagate Constellation 4TB
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-microchip text-info me-2"></i>Mobo:</strong> ASRock B660M PRO
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-plug text-warning me-2"></i>PSU:</strong> Corsair CX750M
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-cube text-dark me-2"></i>Case:</strong> CORSAIR 4000D
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Peripherals & Accessories</h3>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-keyboard me-2"></i>Input & Output Devices</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-desktop text-primary me-2"></i>Primary:</strong> LG 34WQ500-B - 34"
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-desktop text-secondary me-2"></i>Secondary:</strong> ASUS VS248H - 24"
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-keyboard text-info me-2"></i>Keyboard:</strong> System76 Launch
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-mouse text-warning me-2"></i>Mouse:</strong> Logitech G305
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-headphones text-success me-2"></i>Headset:</strong> CCZ DC01 PRO
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-sliders-h text-danger me-2"></i>Mixer:</strong> Pupgsis T12
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="spec-item p-2 bg-light rounded">
+                            <strong><i class="fas fa-video text-primary me-2"></i>Webcam:</strong> Logitech C920x
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Current Hardware Projects</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="skill-card p-4 bg-light rounded-3 shadow-sm h-100">
+                    <div class="project-icon mb-3">
+                        <i class="fas fa-server fa-2x text-primary"></i>
+                    </div>
+                    <h5>Home Server Re-setup</h5>
+                    <p class="mb-0">
+                        Reinstalling Proxmox on my PowerEdge R720 to host containers and VMs for expanding
+                        knowledge in cybersecurity, systems administration, and development projects.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="skill-card p-4 bg-light rounded-3 shadow-sm h-100">
+                    <div class="project-icon mb-3">
+                        <i class="fas fa-shield-alt fa-2x text-danger"></i>
+                    </div>
+                    <h5>Open Source SOC</h5>
+                    <p class="mb-0">
+                        Building a Security Operations Center using open source tools like ELK Stack,
+                        Wazuh, and MISP for threat detection and incident response.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>System Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="stat-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><strong>Total Storage:</strong></span>
+                        <span class="badge bg-primary">6.5TB</span>
+                    </div>
+                </div>
+                <div class="stat-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><strong>RAM:</strong></span>
+                        <span class="badge bg-success">64GB</span>
+                    </div>
+                </div>
+                <div class="stat-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><strong>CPU Cores:</strong></span>
+                        <span class="badge bg-warning">16C/24T</span>
+                    </div>
+                </div>
+                <div class="stat-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><strong>Display Area:</strong></span>
+                        <span class="badge bg-info">58" Total</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Hardware Focus</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-server text-primary me-2"></i>Enterprise Server Hardware</li>
+                    <li class="mb-2"><i class="fas fa-network-wired text-success me-2"></i>Network Infrastructure</li>
+                    <li class="mb-2"><i class="fas fa-shield-alt text-danger me-2"></i>Security Appliances</li>
+                    <li class="mb-2"><i class="fas fa-cloud text-info me-2"></i>Virtualization Platforms</li>
+                    <li class="mb-2"><i class="fab fa-linux text-warning me-2"></i>Linux Workstations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
