@@ -1,10 +1,21 @@
+import os
 import requests
 from urllib.parse import urlencode
+from dotenv import load_dotenv
 
-# Replace with your actual values from Strava API settings
-CLIENT_ID = '76528'
-CLIENT_SECRET = 'de46e1ec96ad277ae0be94f949301483a4cd1a4d'
-REDIRECT_URI = 'http://localhost'
+# Load environment variables
+load_dotenv()
+
+# Get values from environment variables
+CLIENT_ID = os.getenv('STRAVA_CLIENT_ID')
+CLIENT_SECRET = os.getenv('STRAVA_CLIENT_SECRET')
+REDIRECT_URI = os.getenv('STRAVA_REDIRECT_URI', 'http://localhost')
+
+# Validate required environment variables
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("Error: Missing required environment variables.")
+    print("Please ensure STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET are set in your .env file")
+    exit(1)
 
 # Step 1: Get authorization URL
 auth_url = f"https://www.strava.com/oauth/authorize?{urlencode({
@@ -59,9 +70,9 @@ if response.status_code == 200:
     print()
     print("Add these to your .env file:")
     print("=" * 60)
-    print(f"STRAVA_CLIENT_ID={CLIENT_ID}")
-    print(f"STRAVA_CLIENT_SECRET={CLIENT_SECRET}")
+    print(f"STRAVA_ACCESS_TOKEN={tokens['access_token']}")
     print(f"STRAVA_REFRESH_TOKEN={tokens['refresh_token']}")
+    print(f"STRAVA_EXPIRES_AT={tokens['expires_at']}")
     print("=" * 60)
 else:
     print(f"Error: {response.status_code}")
