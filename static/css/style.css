@@ -384,6 +384,49 @@ span[class*="badge"]:hover {
   transform: translateY(-1px);
 }
 
+.bg-gradient .btn-modern {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 1);
+  color: #667eea !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  margin: 0.5rem 0.25rem;
+  text-shadow: none;
+}
+
+.bg-gradient .btn-modern:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  color: #4c5bc7 !important;
+  text-decoration: none;
+}
+
+.bg-gradient .btn-modern i {
+  color: #667eea;
+  opacity: 1;
+}
+
+.bg-gradient .btn-modern:hover i {
+  color: #4c5bc7;
+}
+
+.bg-gradient .card-body h3,
+.bg-gradient .card-body p {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+}
+
+.bg-gradient .card-body h3 {
+  font-weight: 700;
+}
+
 .card:not(.modern-sidebar-card) {
   transition: all 0.4s ease;
   border-radius: 20px;
