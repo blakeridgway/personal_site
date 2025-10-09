@@ -23,6 +23,11 @@ spec:
           env:
             - name: DATA_DIR
               value: /personalsite/data
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: SECRET_KEY
             - name: INTERVALS_API_KEY
               valueFrom:
                 secretKeyRef:
