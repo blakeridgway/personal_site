@@ -69,11 +69,10 @@ class IntervalsIcuService:
             self._save_cache()
         return data
 
-    # HTTP
     def _headers(self):
-        # Intervals.icu API key is used via Basic auth where the key is the username and no password.
-        # Many clients supply it as the full "Basic base64(key:)" pre-encoded, but the API also accepts:
-        return {"Authorization": f"Basic {self.api_key}"}
+        auth_string = f"{self.api_key}:"
+        encoded_auth = base64.b64encode(auth_string.encode()).decode()
+        return {"Authorization": f"Basic {encoded_auth}"}
 
     def _get(self, path, params=None):
         if self.mock_mode:
