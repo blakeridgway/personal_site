@@ -7,4 +7,4 @@ resources:
   - secret.yaml
 images:
   - name: ghcr.io/blakeridgway/personal-devsite
-    newTag: 20251009113348-b32061b
+    newTag: 20251009114759-c803d97
