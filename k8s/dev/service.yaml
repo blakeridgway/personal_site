@@ -6,6 +6,7 @@ metadata:
 spec:
   selector:
     app: devsite
+  type: LoadBalancer
   ports:
     - port: 80
       targetPort: 5002
