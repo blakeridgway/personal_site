@@ -1,7 +1,9 @@
 name: build-and-bump
 on:
   push:
-    branches: [dev]
+    branches: 
+      - main
+      - dev
 
 permissions:
   contents: write
