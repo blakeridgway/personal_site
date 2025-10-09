@@ -35,25 +35,30 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/personal-devsite:latest
             ghcr.io/${{ github.repository_owner }}/personal-devsite:${{ steps.vars.outputs.TAG }}
 
-      - name: Create and apply secrets to manifest
+      - name: Substitute secrets in manifests
         run: |
           # Export secrets as environment variables
-          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
           export INTERVALS_API_KEY="${{ secrets.INTERVALS_API_KEY }}"
           export INTERVALS_ATHLETE_ID="${{ secrets.INTERVALS_ATHLETE_ID }}"
           
-          # Substitute variables in the secret manifest
-          envsubst < k8s/dev/secret.yaml > k8s/dev/secret-populated.yaml
-          mv k8s/dev/secret-populated.yaml k8s/dev/secret.yaml
+          # Process all yaml files in the k8s/dev directory
+          for file in k8s/dev/*.yaml k8s/dev/*.yml; do
+            if [ -f "$file" ]; then
+              echo "Processing $file"
+              envsubst < "$file" > "${file}.tmp"
+              mv "${file}.tmp" "$file"
+            fi
+          done
+
+      - name: Verify manifest path exists
+        run: test -f k8s/dev/kustomization.yaml
+
+      - name: Bump kustomize image tag
+        run: |
+          sed -i "s#^\(\s*newTag:\s*\).*#\1${{ steps.vars.outputs.TAG }}#" k8s/dev/kustomization.yaml
 
       - name: Commit and push manifest update
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: bump image tag to ${{ steps.vars.outputs.TAG }}"
-          file_pattern: k8s/dev/kustomization.yaml k8s/dev/secret.yaml
-
-      - name: Commit and push manifest update
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: bump image tag to ${{ steps.vars.outputs.TAG }}"
-          file_pattern: k8s/dev/kustomization.yaml
+          file_pattern: k8s/dev/
