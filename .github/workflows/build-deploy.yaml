@@ -36,14 +36,14 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/personal-devsite:${{ steps.vars.outputs.TAG }}
 
       - name: Verify manifest path exists
-        run: test -f k8s/devsite/kustomization.yaml
+        run: test -f k8s/dev/kustomization.yaml
 
       - name: Bump kustomize image tag
         run: |
-          sed -i "s#^\(\s*newTag:\s*\).*#\1${{ steps.vars.outputs.TAG }}#" k8s/devsite/kustomization.yaml
+          sed -i "s#^\(\s*newTag:\s*\).*#\1${{ steps.vars.outputs.TAG }}#" k8s/dev/kustomization.yaml
 
       - name: Commit and push manifest update
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: bump image tag to ${{ steps.vars.outputs.TAG }}"
-          file_pattern: k8s/devsite/kustomization.yaml
+          file_pattern: k8s/dev/kustomization.yaml
