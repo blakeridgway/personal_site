@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: devsite
-  namespace: dev
+  namespace: personal-site-dev
 spec:
   selector:
     app: devsite

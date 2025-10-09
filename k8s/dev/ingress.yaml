@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: devsite
-  namespace: dev
+  namespace: personal-site-dev
 spec:
   ingressClassName: public
   rules:
