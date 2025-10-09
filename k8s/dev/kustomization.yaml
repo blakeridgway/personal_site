@@ -1,0 +1,8 @@
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+images:
+  - name: ghcr.io/blakeridgway/personal-devsite
+    newTag: 0.1.0

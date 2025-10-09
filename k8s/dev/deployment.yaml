@@ -1,0 +1,3 @@
+containers:
+  - name: personal-devsite
+    image: ghcr.io/blakeridgway/personal-devsite
