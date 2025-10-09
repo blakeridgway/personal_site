@@ -34,8 +34,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/personal-devsite:${{ steps.vars.outputs.TAG }}
 
       - name: Bump kustomize image tag
-        run: |
-          sed -i "s/newTag:.*/newTag: ${{ steps.vars.outputs.TAG }}/" k8s/devsite/kustomization.yaml
+        run: sed -i "s/newTag:.*/newTag: ${{ steps.vars.outputs.TAG }}/" k8s/devsite/kustomization.yaml
 
       - name: Commit and push manifest update
         uses: stefanzweifel/git-auto-commit-action@v5

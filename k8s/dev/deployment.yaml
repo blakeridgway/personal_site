@@ -1,3 +1,5 @@
 containers:
-  - name: personal-devsite
+  - name: devsite
     image: ghcr.io/blakeridgway/personal-devsite
+    ports:
+      - containerPort: 5002
