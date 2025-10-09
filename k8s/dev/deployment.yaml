@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsite
+  namespace: personal-site-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devsite
+  template:
+    metadata:
+      labels:
+        app: devsite
+    spec:
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: devsite
+          image: ghcr.io/blakeridgway/personal-devsite
+          ports:
+            - containerPort: 5002
+          env:
+            - name: DATA_DIR
+              value: /personalsite/data
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: SECRET_KEY
+            - name: INTERVALS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: INTERVALS_API_KEY
+            - name: INTERVALS_ATHLETE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: INTERVALS_ATHLETE_ID
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5002
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /personalsite/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: devsite-data

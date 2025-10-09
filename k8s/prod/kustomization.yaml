@@ -1,0 +1,9 @@
+resources:
+  - namespace.yaml
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+images:
+  - name: ghcr.io/blakeridgway/personal-devsite
+    newTag: 20251009124624-dbfd676
