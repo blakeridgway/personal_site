@@ -6,4 +6,4 @@ resources:
   - ingress.yaml
 images:
   - name: ghcr.io/blakeridgway/personal-devsite
-    newTag: 20251009014411-f0c78ab
+    newTag: 20251009020652-fbd0208
