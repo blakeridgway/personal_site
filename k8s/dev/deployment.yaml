@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: devsite
   namespace: personal-site-dev
-  spec:
+spec:
   replicas: 1
   selector:
     matchLabels:
