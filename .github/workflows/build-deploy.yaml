@@ -35,6 +35,13 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/personal-devsite:latest
             ghcr.io/${{ github.repository_owner }}/personal-devsite:${{ steps.vars.outputs.TAG }}
 
+      - name: Create .env from secrets
+        run: |
+          cat > .env << 'EOF'
+          INTERVALS_API_KEY=${{ secrets.INTERVALS_API_KEY }}
+          INTERVALS_ATHLETE_ID=${{ secrets.INTERVALS_ATHLETE_ID }}
+          EOF
+
       - name: Verify manifest path exists
         run: test -f k8s/dev/kustomization.yaml
 

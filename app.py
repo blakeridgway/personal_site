@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import json
@@ -11,6 +12,9 @@ from user import User
 from models import db
 from traffic_tracker import TrafficTracker
 from sqlalchemy import func, desc
+
+# Cycling data provider (Intervals.icu)
+from intervals_service import IntervalsIcuService
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-change-in-production')
@@ -33,28 +37,22 @@ login_manager.login_message = 'Please log in to access the admin panel.'
 # Initialize Blog Manager
 blog_manager = BlogManager()
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
 
-
-# Initialize Strava service (with error handling)
+# Initialize Intervals.icu service (no Strava)
 try:
-    from strava_service import StravaService
-
-    strava = StravaService()
-    STRAVA_ENABLED = True
+    cycling_service = IntervalsIcuService()
+    DATA_ENABLED = True
 except Exception as e:
-    print(f"Strava service not available: {e}")
-    strava = None
-    STRAVA_ENABLED = False
-
+    print(f"Cycling service not available: {e}")
+    cycling_service = None
+    DATA_ENABLED = False
 
 # Load blog posts from BlogManager
 def load_blog_posts():
     return blog_manager.load_posts()
-
 
 @app.route('/')
 def index():
@@ -62,41 +60,30 @@ def index():
     recent_posts = sorted(posts, key=lambda x: x['date'], reverse=True)[:3]
     return render_template('index.html', recent_posts=recent_posts)
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-
 @app.route('/hardware')
 def hardware():
     return render_template('hardware.html')
-
 
 @app.route('/biking')
 def biking():
     ytd_stats = None
     recent_activities = []
 
-    if STRAVA_ENABLED and strava:
+    if DATA_ENABLED and cycling_service:
         try:
-            ytd_stats = strava.get_ytd_stats()
-            recent_activities = strava.format_recent_activities()
+            ytd_stats = cycling_service.get_ytd_stats()
+            recent_activities = cycling_service.format_recent_activities()
         except Exception as e:
-            print(f"Error fetching Strava data: {e}")
-            ytd_stats = {
-                'distance': 0,
-                'count': 0,
-                'elevation': 0,
-                'time': 0
-            }
+            print(f"Error fetching cycling data: {e}")
+            ytd_stats = {'distance': 0, 'count': 0, 'elevation': 0, 'time': 0}
+            recent_activities = []
     else:
-        ytd_stats = {
-            'distance': 2450,
-            'count': 127,
-            'elevation': 45600,
-            'time': 156
-        }
+        # Fallback demo values if service is unavailable
+        ytd_stats = {'distance': 2450, 'count': 127, 'elevation': 45600, 'time': 156}
         recent_activities = [
             {
                 'name': 'Morning Training Ride',
@@ -109,12 +96,13 @@ def biking():
 
     current_time = datetime.now().strftime('%B %d, %Y at %I:%M %p')
 
-    return render_template('biking.html',
-                           ytd_stats=ytd_stats,
-                           recent_activities=recent_activities,
-                           strava_enabled=STRAVA_ENABLED,
-                           last_updated=current_time)
-
+    return render_template(
+        'biking.html',
+        ytd_stats=ytd_stats,
+        recent_activities=recent_activities,
+        strava_enabled=False,  # You can remove uses of this in the template if desired
+        last_updated=current_time
+    )
 
 @app.route('/blog')
 def blog():
@@ -122,14 +110,12 @@ def blog():
     posts = sorted(posts, key=lambda x: x['date'], reverse=True)
     return render_template('blog.html', posts=posts)
 
-
 @app.route('/blog/<int:post_id>')
 def blog_post(post_id):
     post = blog_manager.get_post(post_id)
     if not post:
         return "Post not found", 404
     return render_template('blog_post.html', post=post)
-
 
 # Admin Routes
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -149,7 +135,6 @@ def admin_login():
 
     return render_template('admin/login.html', form=form)
 
-
 @app.route('/admin/logout')
 @login_required
 def admin_logout():
@@ -157,14 +142,12 @@ def admin_logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
-
 @app.route('/admin')
 @login_required
 def admin_dashboard():
     posts = load_blog_posts()
     posts = sorted(posts, key=lambda x: x['date'], reverse=True)
     return render_template('admin/dashboard.html', posts=posts)
-
 
 @app.route('/admin/post/new', methods=['GET', 'POST'])
 @login_required
@@ -181,7 +164,6 @@ def admin_new_post():
         return redirect(url_for('admin_dashboard'))
 
     return render_template('admin/edit_post.html', form=form, title='New Post')
-
 
 @app.route('/admin/post/<int:post_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -205,14 +187,12 @@ def admin_edit_post(post_id):
 
     return render_template('admin/edit_post.html', form=form, post=post, title='Edit Post')
 
-
 @app.route('/admin/post/<int:post_id>/delete', methods=['POST'])
 @login_required
 def admin_delete_post(post_id):
     blog_manager.delete_post(post_id)
     flash('Post deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
-
 
 # Traffic Analytics Admin Route
 @app.route('/admin/traffic')
@@ -238,7 +218,7 @@ def admin_traffic():
         func.date(PageView.timestamp).between(start_date, end_date)
     ).scalar() or 0
 
-    # Calculate bounce rate (sessions with only one page view)
+    # Calculate bounce rate
     single_page_sessions = db.session.query(
         PageView.session_id
     ).filter(
@@ -271,7 +251,7 @@ def admin_traffic():
         PageView.referrer != ''
     ).group_by(PageView.referrer).order_by(desc('views')).limit(10).all()
 
-    # Daily views for chart - Fixed to handle SQLite date strings
+    # Daily views for chart
     daily_views_raw = db.session.query(
         func.date(PageView.timestamp).label('date'),
         func.count(PageView.id).label('views'),
@@ -292,10 +272,9 @@ def admin_traffic():
         'bounce_rate': round(bounce_rate, 2)
     }
 
-    # Format daily views for JSON - Handle both string and date objects
+    # Format daily views for JSON
     daily_views_json = []
     for day in daily_views_raw:
-        # Handle case where SQLite returns date as string
         if isinstance(day.date, str):
             date_str = day.date
         else:
@@ -321,7 +300,6 @@ def admin_traffic():
 def realtime_traffic():
     from models import PageView
 
-    # Last 5 minutes of traffic
     five_min_ago = datetime.utcnow() - timedelta(minutes=5)
 
     recent_views = PageView.query.filter(
@@ -337,25 +315,25 @@ def realtime_traffic():
         'recent_views': [{
             'path': view.path,
             'timestamp': view.timestamp.isoformat(),
-            'ip_address': view.ip_address[:8] + '...',  # Partial IP for privacy
+            'ip_address': view.ip_address[:8] + '...',
             'country': view.country,
             'city': view.city
         } for view in recent_views]
     })
 
-
-@app.route('/api/strava-stats')
-def strava_stats_api():
-    if not STRAVA_ENABLED or not strava:
+# Provider-agnostic cycling stats API (replaces /api/strava-stats)
+@app.route('/api/cycling-stats')
+def cycling_stats_api():
+    if not DATA_ENABLED or not cycling_service:
         return jsonify({
-            'error': 'Strava service not available',
+            'error': 'Cycling service not available',
             'ytd_stats': None,
             'recent_activities': []
         }), 503
 
     try:
-        ytd_stats = strava.get_ytd_stats()
-        recent_activities = strava.format_recent_activities()
+        ytd_stats = cycling_service.get_ytd_stats()
+        recent_activities = cycling_service.format_recent_activities()
 
         return jsonify({
             'ytd_stats': ytd_stats,
@@ -368,11 +346,9 @@ def strava_stats_api():
             'recent_activities': []
         }), 500
 
-
 @app.route('/health')
 def health_check():
     return {'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()}
-
 
 # Create database tables on startup
 with app.app_context():
