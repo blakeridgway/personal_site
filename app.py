@@ -1,8 +1,26 @@
+import os
+from pathlib import Path
+
+if Path('.env').exists():
+    print("📄 Found .env file, loading environment variables...")
+    with open('.env', 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                os.environ[key] = value
+                print(f"✅ Loaded {key}")
+else:
+    print("⚠️  No .env file found, using system environment variables")
+
+print(f"🔑 SECRET_KEY: {'✅' if os.getenv('SECRET_KEY') else '❌'}")
+print(f"🚴 INTERVALS_API_KEY: {'✅' if os.getenv('INTERVALS_API_KEY') else '❌'}")
+print(f"👤 INTERVALS_ATHLETE_ID: {'✅' if os.getenv('INTERVALS_ATHLETE_ID') else '❌'}")
+
 # app.py
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import json
-import os
 from datetime import datetime, timedelta
 from blog_manager import BlogManager
 from forms import LoginForm, BlogPostForm
