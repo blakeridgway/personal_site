@@ -13,18 +13,34 @@ spec:
       labels:
         app: devsite
     spec:
+      securityContext:
+        fsGroup: 10001
+
       containers:
         - name: devsite
           image: ghcr.io/blakeridgway/personal-devsite
           ports:
             - containerPort: 5002
+          env:
+            - name: DATA_DIR
+              value: /personalsite/data
           readinessProbe:
             httpGet:
               path: /
               port: 5002
             initialDelaySeconds: 5
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
               port: 5002
             initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /personalsite/data
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: devsite-data

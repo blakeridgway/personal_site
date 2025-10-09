@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /personalsite
 
+RUN mkdir -p /personalsite/data && chown -R 10001:10001 /personalsite
+ENV DATA_DIR=/personalsite/data
+
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
