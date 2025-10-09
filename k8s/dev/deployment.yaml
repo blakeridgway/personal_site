@@ -15,7 +15,6 @@ spec:
     spec:
       securityContext:
         fsGroup: 10001
-
       containers:
         - name: devsite
           image: ghcr.io/blakeridgway/personal-devsite
@@ -24,6 +23,16 @@ spec:
           env:
             - name: DATA_DIR
               value: /personalsite/data
+            - name: INTERVALS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: INTERVALS_API_KEY
+            - name: INTERVALS_ATHLETE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: cycling-secrets
+                  key: INTERVALS_ATHLETE_ID
           resources:
             requests:
               cpu: 50m
@@ -46,7 +55,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /personalsite/data
-
       volumes:
         - name: data
           persistentVolumeClaim:

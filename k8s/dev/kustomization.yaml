@@ -4,6 +4,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+  - secret.yaml
 images:
   - name: ghcr.io/blakeridgway/personal-devsite
     newTag: 20251009113348-b32061b
