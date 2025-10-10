@@ -3,8 +3,14 @@ kind: Ingress
 metadata:
   name: devsite
   namespace: personal-site-dev
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
   ingressClassName: public
+  tls:
+  - hosts:
+    - dev.blakeridgway.com
+    secretName: devsite-tls
   rules:
     - host: dev.blakeridgway.com
       http:
