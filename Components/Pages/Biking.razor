@@ -1,0 +1,209 @@
+@page "/biking"
+@using PersonalSite.Models
+@using PersonalSite.Services
+@inject ICyclingService CyclingService
+
+<PageTitle>Cycling | Blake Ridgway</PageTitle>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container-lg position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="blog-card-category cycling mb-3 d-inline-block">Ultra Endurance Athlete</span>
+                <h1 class="display-hero mb-4">
+                    Cycling <span class="text-gradient">Performance</span>
+                </h1>
+                <p class="lead">
+                    Tracking 5,000+ miles annually with power meter analytics,
+                    training data, and expedition planning powered by Intervals.icu.
+                </p>
+
+                <!-- Hero Stats -->
+                <div class="hero-stats-ticker">
+                    <div class="ticker-item">
+                        <div class="ticker-value">@_stats.Distance.ToString("N0")</div>
+                        <div class="ticker-label">Miles YTD</div>
+                    </div>
+                    <div class="ticker-item">
+                        <div class="ticker-value">@((_stats.Elevation / 1000).ToString("N1"))k</div>
+                        <div class="ticker-label">Feet Climbed</div>
+                    </div>
+                    <div class="ticker-item">
+                        <div class="ticker-value">@_stats.Count</div>
+                        <div class="ticker-label">Rides</div>
+                    </div>
+                    <div class="ticker-item">
+                        <div class="ticker-value">@_stats.AvgSpeed.ToString("N1")</div>
+                        <div class="ticker-label">Avg MPH</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container-lg py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <!-- YTD Performance -->
+            <section class="mb-5">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="bi bi-bar-chart-line text-primary me-2"></i>@DateTime.Now.Year Performance
+                    </h2>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <i class="bi bi-speedometer2"></i>
+                            </div>
+                            <div class="stat-value blue">@_stats.Distance.ToString("N0")</div>
+                            <div class="stat-label">Miles</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <div class="stat-value green">@((_stats.Elevation / 1000).ToString("N1"))k</div>
+                            <div class="stat-label">Feet</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon orange">
+                                <i class="bi bi-clock"></i>
+                            </div>
+                            <div class="stat-value orange">@_stats.Time.ToString("N0")</div>
+                            <div class="stat-label">Hours</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <i class="bi bi-lightning"></i>
+                            </div>
+                            <div class="stat-value purple">@_stats.AvgSpeed.ToString("N1")</div>
+                            <div class="stat-label">Avg MPH</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Rides -->
+            <section>
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="bi bi-activity text-accent me-2"></i>Recent Rides
+                    </h2>
+                </div>
+
+                @if (_activities.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var activity in _activities)
+                        {
+                            <div class="card-glass rounded-3 p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <div class="activity-type mb-2">
+                                            <i class="bi bi-bicycle"></i>
+                                            Ride
+                                        </div>
+                                        <h3 class="h5 mb-1">@activity.Name</h3>
+                                        <small class="text-muted">@activity.Date</small>
+                                    </div>
+                                    <span class="blog-card-category cycling">@activity.Distance mi</span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-4 mt-3 pt-3 border-top border-dark-subtle">
+                                    <div class="activity-stat">
+                                        <i class="bi bi-speedometer text-primary"></i>
+                                        <span class="fw-semibold">@activity.AvgSpeed</span>
+                                        <span class="text-muted">mph</span>
+                                    </div>
+                                    <div class="activity-stat">
+                                        <i class="bi bi-graph-up text-accent"></i>
+                                        <span class="fw-semibold">@activity.Elevation.ToString("N0")</span>
+                                        <span class="text-muted">ft</span>
+                                    </div>
+                                    <div class="activity-stat">
+                                        <i class="bi bi-clock text-warning"></i>
+                                        <span class="fw-semibold">@activity.Duration</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="card-glass rounded-xl p-5 text-center">
+                        <i class="bi bi-bicycle fs-1 text-muted mb-3 d-block animate-pulse"></i>
+                        <p class="text-muted mb-0">Loading activity data...</p>
+                    </div>
+                }
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card-glass rounded-xl p-4 sticky-top" style="top: 80px;">
+                <h3 class="h6 mb-3">
+                    <i class="bi bi-cloud-check text-accent me-2"></i>Data Source
+                </h3>
+                <p class="small text-muted mb-3">
+                    All cycling data is automatically synced from Intervals.icu using their REST API.
+                </p>
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    @if (CyclingService.IsAvailable)
+                    {
+                        <span class="d-inline-block w-2 h-2 rounded-circle" style="width: 8px; height: 8px; background: var(--data-green);"></span>
+                        <span class="small text-muted">Live Data Connected</span>
+                    }
+                    else
+                    {
+                        <span class="d-inline-block w-2 h-2 rounded-circle animate-pulse" style="width: 8px; height: 8px; background: var(--data-orange);"></span>
+                        <span class="small text-muted">Using Sample Data</span>
+                    }
+                </div>
+
+                <div class="section-divider my-3"></div>
+
+                <h3 class="h6 mb-3">
+                    <i class="bi bi-trophy text-warning me-2"></i>Goals
+                </h3>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Annual Distance</span>
+                        <span class="text-primary fw-semibold">@((_stats.Distance / 5000 * 100).ToString("N0"))%</span>
+                    </div>
+                    <div class="progress" style="height: 6px; background: var(--bg-elevated);">
+                        <div class="progress-bar" role="progressbar"
+                             style="width: @(Math.Min(100, _stats.Distance / 5000 * 100))%; background: var(--gradient-primary);">
+                        </div>
+                    </div>
+                    <small class="text-muted">@_stats.Distance.ToString("N0") / 5,000 miles</small>
+                </div>
+
+                <a href="https://www.strava.com/athletes/blakeridgway" target="_blank" class="btn btn-outline-accent w-100 mt-3">
+                    <i class="bi bi-strava me-2"></i>Follow on Strava
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CyclingStats _stats = new();
+    private IEnumerable<CyclingActivity> _activities = Enumerable.Empty<CyclingActivity>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _stats = await CyclingService.GetYtdStatsAsync();
+        _activities = await CyclingService.GetRecentActivitiesAsync(5);
+    }
+}

@@ -1,0 +1,116 @@
+@page "/admin/login"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using PersonalSite.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Admin Login | Blake Ridgway</PageTitle>
+
+<div class="container-lg py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card-glass rounded-4 p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                    <h1 class="h3 mt-3">Admin Login</h1>
+                    <p class="text-muted">Sign in to access the dashboard</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>@_errorMessage
+                    </div>
+                }
+
+                <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" FormName="login">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <InputText @bind-Value="_loginModel.Username" class="form-control" placeholder="Enter username" />
+                        <ValidationMessage For="@(() => _loginModel.Username)" class="text-danger small" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <InputText @bind-Value="_loginModel.Password" type="password" class="form-control" placeholder="Enter password" />
+                        <ValidationMessage For="@(() => _loginModel.Password)" class="text-danger small" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" disabled="@_isLoading">
+                        @if (_isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </EditForm>
+
+                <div class="text-center mt-4">
+                    <a href="/" class="text-muted small">
+                        <i class="bi bi-arrow-left me-1"></i>Back to site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel _loginModel = new();
+    private string? _errorMessage;
+    private bool _isLoading;
+
+    private async Task HandleLogin()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var principal = await AuthService.AuthenticateAsync(_loginModel.Username, _loginModel.Password);
+
+            if (principal != null)
+            {
+                var httpContext = HttpContextAccessor.HttpContext;
+                if (httpContext != null)
+                {
+                    await httpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        principal,
+                        new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24)
+                        });
+
+                    Navigation.NavigateTo("/admin", forceLoad: true);
+                }
+            }
+            else
+            {
+                _errorMessage = "Invalid username or password";
+            }
+        }
+        catch (Exception)
+        {
+            _errorMessage = "An error occurred. Please try again.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    public class LoginModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Username is required")]
+        public string Username { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; } = string.Empty;
+    }
+}

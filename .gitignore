@@ -1,36 +1,63 @@
 # Environment variables
 .env
+appsettings.Development.json
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-ENV/
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+*.suo
+*.cache
+project.lock.json
+*.nuget.props
+*.nuget.targets
 
-# Flask
-instance/
-.webassets-cache
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+nuget.exe
 
 # Data files
-data/blog_posts.json
-strava_cache.json
-traffic_analytics.db
-
-# Uploads
-static/uploads/*
-!static/uploads/.gitkeep
+*.db
+*.db-shm
+*.db-wal
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-*
 
 # OS
 .DS_Store
 Thumbs.db
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

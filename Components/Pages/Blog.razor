@@ -1,0 +1,135 @@
+@page "/blog"
+@using PersonalSite.Models
+@using PersonalSite.Services
+@inject IBlogService BlogService
+
+<PageTitle>Blog | Blake Ridgway</PageTitle>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container-lg position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="blog-card-category tech mb-3 d-inline-block">Technical Writing</span>
+                <h1 class="display-hero mb-4">
+                    Blog & <span class="text-gradient">Articles</span>
+                </h1>
+                <p class="lead">
+                    Deep dives into SRE practices, cloud infrastructure, DevOps automation,
+                    security, and the intersection of technology with endurance sports.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container-lg py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <section>
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="bi bi-journal-text text-primary me-2"></i>All Articles
+                    </h2>
+                    <span class="text-muted">@_posts.Count() posts</span>
+                </div>
+
+                @if (_posts.Any())
+                {
+                    <div class="row g-4">
+                        @foreach (var post in _posts)
+                        {
+                            <div class="col-md-6">
+                                <a href="/blog/@post.Slug" class="text-decoration-none">
+                                    <div class="blog-card-featured h-100">
+                                        <div class="blog-card-content">
+                                            <span class="blog-card-category @GetCategoryClass(post.Category)">@post.Category</span>
+                                            <h3 class="blog-card-title">@post.Title</h3>
+                                            <p class="blog-card-excerpt">@post.Excerpt</p>
+                                            <div class="blog-card-meta">
+                                                <span><i class="bi bi-calendar3 me-1"></i>@post.PublishedDate.ToString("MMM d, yyyy")</span>
+                                                <span><i class="bi bi-clock me-1"></i>@post.ReadTime min read</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="card-glass rounded-xl p-5 text-center">
+                        <i class="bi bi-journal-text fs-1 text-muted mb-3 d-block"></i>
+                        <h3 class="h5 mb-3">Coming Soon</h3>
+                        <p class="text-muted mb-0">
+                            Blog posts are being migrated to the new platform.
+                            Check back soon for articles on SRE, DevOps, cloud infrastructure, and more!
+                        </p>
+                    </div>
+                }
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card-glass rounded-xl p-4 sticky-top" style="top: 80px;">
+                <h3 class="h6 mb-3">
+                    <i class="bi bi-tags text-primary me-2"></i>Categories
+                </h3>
+                @if (_categories.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var category in _categories)
+                        {
+                            <span class="badge-category">@category</span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="small text-muted mb-0">Categories will appear as posts are added.</p>
+                }
+
+                <div class="section-divider my-4"></div>
+
+                <h3 class="h6 mb-3">
+                    <i class="bi bi-rss text-accent me-2"></i>Stay Updated
+                </h3>
+                <p class="small text-muted mb-3">
+                    Follow along for articles on cloud infrastructure, DevOps, and cycling tech.
+                </p>
+                <a href="https://github.com/blakeridgway" target="_blank" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-github me-2"></i>Follow on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<BlogPost> _posts = Enumerable.Empty<BlogPost>();
+    private IEnumerable<string> _categories = Enumerable.Empty<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var postsTask = BlogService.GetAllPostsAsync();
+        var categoriesTask = BlogService.GetCategoriesAsync();
+
+        await Task.WhenAll(postsTask, categoriesTask);
+
+        _posts = await postsTask;
+        _categories = await categoriesTask;
+    }
+
+    private string GetCategoryClass(string category)
+    {
+        return category?.ToLower() switch
+        {
+            "tech" or "technology" or "infrastructure" or "devops" or "sre" => "tech",
+            "cycling" or "biking" or "endurance" => "cycling",
+            _ => "general"
+        };
+    }
+}

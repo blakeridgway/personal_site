@@ -1,0 +1,201 @@
+@page "/admin/traffic"
+@using Microsoft.AspNetCore.Authorization
+@using PersonalSite.Models
+@using PersonalSite.Services
+@attribute [Authorize]
+@inject ITrafficService TrafficService
+
+<PageTitle>Traffic Analytics | Blake Ridgway</PageTitle>
+
+<div class="container-lg py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-graph-up text-primary me-2"></i>Traffic Analytics
+            </h1>
+            <p class="text-muted mb-0">Monitor your site's traffic and performance</p>
+        </div>
+        <div>
+            <a href="/admin" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card-glass rounded-3 p-4 text-center">
+                <i class="bi bi-eye fs-2 text-primary mb-2"></i>
+                <div class="h3 mb-1">@_stats.TotalPageViews</div>
+                <div class="text-muted">Total Page Views</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass rounded-3 p-4 text-center">
+                <i class="bi bi-people fs-2 text-success mb-2"></i>
+                <div class="h3 mb-1">@_stats.UniqueVisitors</div>
+                <div class="text-muted">Unique Visitors</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass rounded-3 p-4 text-center">
+                <i class="bi bi-lightning fs-2 text-warning mb-2"></i>
+                <div class="h3 mb-1">@_stats.AvgResponseTime ms</div>
+                <div class="text-muted">Avg Response Time</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass rounded-3 p-4 text-center">
+                <i class="bi bi-door-open fs-2 text-info mb-2"></i>
+                <div class="h3 mb-1">@_stats.BounceRate%</div>
+                <div class="text-muted">Bounce Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Daily Traffic Chart (placeholder) -->
+        <div class="col-lg-8">
+            <div class="card-glass rounded-4 p-4">
+                <h2 class="h5 mb-4">
+                    <i class="bi bi-bar-chart text-primary me-2"></i>Daily Traffic (Last 30 Days)
+                </h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th class="text-end">Page Views</th>
+                                <th class="text-end">Visitors</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var day in _dailyTraffic.TakeLast(14).Reverse())
+                            {
+                                <tr>
+                                    <td>@day.Date.ToString("MMM d")</td>
+                                    <td class="text-end">@day.PageViews</td>
+                                    <td class="text-end">@day.UniqueVisitors</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Pages -->
+        <div class="col-lg-4">
+            <div class="card-glass rounded-4 p-4 mb-4">
+                <h2 class="h5 mb-4">
+                    <i class="bi bi-file-earmark-text text-success me-2"></i>Top Pages
+                </h2>
+                @if (_topPages.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var p in _topPages)
+                        {
+                            <div class="list-group-item bg-transparent border-dark-subtle px-0 d-flex justify-content-between">
+                                <span class="text-truncate" style="max-width: 180px;">@p.Path</span>
+                                <span class="badge bg-primary">@p.Views</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">No data yet</p>
+                }
+            </div>
+
+            <div class="card-glass rounded-4 p-4">
+                <h2 class="h5 mb-4">
+                    <i class="bi bi-link-45deg text-info me-2"></i>Top Referrers
+                </h2>
+                @if (_topReferrers.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var referrer in _topReferrers)
+                        {
+                            <div class="list-group-item bg-transparent border-dark-subtle px-0 d-flex justify-content-between">
+                                <span class="text-truncate" style="max-width: 180px;">@GetDomain(referrer.Referrer)</span>
+                                <span class="badge bg-info">@referrer.Count</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center">No referrers yet</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Page Views -->
+    <div class="card-glass rounded-4 p-4 mt-4">
+        <h2 class="h5 mb-4">
+            <i class="bi bi-clock-history text-warning me-2"></i>Recent Page Views
+        </h2>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Path</th>
+                        <th>IP Address</th>
+                        <th>Time</th>
+                        <th>Response</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var view in _recentViews)
+                    {
+                        <tr>
+                            <td class="text-truncate" style="max-width: 200px;">@view.Path</td>
+                            <td><code>@view.IpAddress</code></td>
+                            <td class="text-muted">@view.Timestamp.ToString("HH:mm:ss")</td>
+                            <td>@view.ResponseTime ms</td>
+                            <td>
+                                <span class="badge @(view.StatusCode < 400 ? "bg-success" : "bg-danger")">
+                                    @view.StatusCode
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private TrafficStats _stats = new();
+    private IEnumerable<DailyTraffic> _dailyTraffic = Enumerable.Empty<DailyTraffic>();
+    private IEnumerable<PageViewSummary> _topPages = Enumerable.Empty<PageViewSummary>();
+    private IEnumerable<ReferrerSummary> _topReferrers = Enumerable.Empty<ReferrerSummary>();
+    private IEnumerable<PageView> _recentViews = Enumerable.Empty<PageView>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _stats = await TrafficService.GetStatsAsync(30);
+        _dailyTraffic = await TrafficService.GetDailyTrafficAsync(30);
+        _topPages = await TrafficService.GetTopPagesAsync(30, 10);
+        _topReferrers = await TrafficService.GetTopReferrersAsync(30, 10);
+        _recentViews = await TrafficService.GetRecentPageViewsAsync(20);
+    }
+
+    private string GetDomain(string url)
+    {
+        try
+        {
+            var uri = new Uri(url);
+            return uri.Host;
+        }
+        catch
+        {
+            return url.Length > 30 ? url[..30] + "..." : url;
+        }
+    }
+}

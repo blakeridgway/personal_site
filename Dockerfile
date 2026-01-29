@@ -1,26 +1,34 @@
-FROM python:3.11-slim
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+# Copy project file and restore
+COPY PersonalSite.csproj .
+RUN dotnet restore
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates tini \
-  && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /personalsite
-
-RUN mkdir -p /personalsite/data && chown -R 10001:10001 /personalsite
-ENV DATA_DIR=/personalsite/data
-
-COPY requirements.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
+# Copy everything else and build
 COPY . .
+RUN dotnet publish -c Release -o /app/publish
 
-RUN useradd -m -u 10001 appuser
-USER 10001
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
 
-EXPOSE 5002
-ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["gunicorn", "--bind", "0.0.0.0:5002", "app:app"]
+# Create directories for content
+RUN mkdir -p /app/Content/posts
+
+# Copy published app
+COPY --from=build /app/publish .
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "PersonalSite.dll"]

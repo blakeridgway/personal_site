@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Blake Ridgway - Site Reliability Engineer & Infrastructure Architect">
+    <base href="/" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="css/site.css" />
+    <link rel="stylesheet" href="PersonalSite.styles.css" />
+
+    <HeadOutlet />
+</head>
+
+<body class="bg-dark text-light">
+    <Routes />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+
+        // Scroll to top on Blazor navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Listen for URL changes
+            let lastUrl = location.href;
+            new MutationObserver(() => {
+                const url = location.href;
+                if (url !== lastUrl) {
+                    lastUrl = url;
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }
+            }).observe(document, { subtree: true, childList: true });
+
+            // Also try Blazor's event if available
+            if (typeof Blazor !== 'undefined') {
+                Blazor.addEventListener('enhancedload', () => {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

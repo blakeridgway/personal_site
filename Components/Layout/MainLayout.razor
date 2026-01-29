@@ -1,0 +1,85 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-dark-subtle sticky-top">
+    <div class="container-lg">
+        <a class="navbar-brand fw-bold" href="/">Blake Ridgway</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link nav-link-custom" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-custom" href="/about">About</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-custom" href="/hardware">Setup</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-custom" href="/biking">Cycling</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-custom" href="/blog">Blog</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main>
+    @Body
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="container-lg">
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <h5 class="mb-3">Blake Ridgway</h5>
+                <p class="text-muted small mb-0">
+                    SRE building reliable systems by day, chasing miles on two wheels by morning.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="social-icons justify-content-md-end">
+                    <a href="https://github.com/blakeridgway" class="social-icon" target="_blank" title="GitHub">
+                        <i class="bi bi-github"></i>
+                    </a>
+                    <a href="https://linkedin.com/in/blakeridgway" class="social-icon" target="_blank" title="LinkedIn">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="https://www.strava.com/athletes/57387663" class="social-icon" target="_blank" title="Strava">
+                        <i class="bi bi-strava"></i>
+                    </a>
+                    <a href="mailto:blake@blakeridgway.com" class="social-icon" title="Email">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="text-center text-muted small">
+            <p class="mb-0">&copy; @DateTime.Now.Year Blake Ridgway. Built with .NET Blazor.</p>
+        </div>
+    </div>
+</footer>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
