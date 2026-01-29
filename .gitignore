@@ -1,6 +1,8 @@
 # Environment variables
 .env
+appsettings.json
 appsettings.Development.json
+appsettings.*.json
 
 # .NET
 bin/
