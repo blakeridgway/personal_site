@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using PersonalSite.Components;
@@ -78,6 +79,39 @@ app.UseAntiforgery();
 
 // Health check endpoint
 app.MapHealthChecks("/health");
+
+// Auth endpoints
+app.MapPost("/api/auth/login", async (HttpContext context, IAuthService authService) =>
+{
+    var form = await context.Request.ReadFormAsync();
+    var username = form["username"].ToString();
+    var password = form["password"].ToString();
+
+    var principal = await authService.AuthenticateAsync(username, password);
+
+    if (principal != null)
+    {
+        await context.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new Microsoft.AspNetCore.Authentication.AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24)
+            });
+        context.Response.Redirect("/admin");
+    }
+    else
+    {
+        context.Response.Redirect("/admin/login?error=invalid");
+    }
+});
+
+app.MapGet("/admin/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    context.Response.Redirect("/");
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
