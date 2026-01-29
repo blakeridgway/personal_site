@@ -1,0 +1,11 @@
+bin/
+obj/
+.git/
+.gitignore
+.vscode/
+.idea/
+*.md
+*.sln
+Dockerfile
+.dockerignore
+appsettings.Development.json

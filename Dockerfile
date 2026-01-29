@@ -4,11 +4,11 @@ WORKDIR /src
 
 # Copy project file and restore
 COPY PersonalSite.csproj .
-RUN dotnet restore
+RUN dotnet restore PersonalSite.csproj
 
 # Copy everything else and build
 COPY . .
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish PersonalSite.csproj -c Release -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
