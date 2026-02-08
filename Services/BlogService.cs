@@ -101,6 +101,62 @@ public class BlogService : IBlogService
             .Take(count);
     }
 
+    public async Task<BlogPost> SavePostAsync(BlogPost post)
+    {
+        // Build YAML front matter
+        var yaml = new System.Text.StringBuilder();
+        yaml.AppendLine("---");
+        yaml.AppendLine($"title: \"{post.Title.Replace("\"", "\\\"")}\"");
+        yaml.AppendLine($"slug: {post.Slug}");
+        yaml.AppendLine($"date: {post.PublishedDate:yyyy-MM-dd}");
+        yaml.AppendLine($"category: {post.Category}");
+        if (post.Tags.Any())
+        {
+            yaml.AppendLine("tags:");
+            foreach (var tag in post.Tags)
+            {
+                yaml.AppendLine($"  - {tag}");
+            }
+        }
+        if (!string.IsNullOrWhiteSpace(post.Excerpt))
+        {
+            yaml.AppendLine($"excerpt: \"{post.Excerpt.Replace("\"", "\\\"")}\"");
+        }
+        yaml.AppendLine($"author: {post.Author}");
+        if (post.IsDraft)
+        {
+            yaml.AppendLine("draft: true");
+        }
+        yaml.AppendLine("---");
+
+        var fileContent = yaml.ToString() + "\n" + post.Content;
+        var fileName = $"{post.PublishedDate:yyyy-MM-dd}-{post.Slug}.md";
+        var filePath = Path.Combine(_postsPath, fileName);
+
+        // If editing an existing post, delete old file (slug or date may have changed)
+        if (!string.IsNullOrEmpty(post.FilePath) && File.Exists(post.FilePath) && post.FilePath != filePath)
+        {
+            File.Delete(post.FilePath);
+        }
+
+        await File.WriteAllTextAsync(filePath, fileContent);
+        post.FilePath = filePath;
+
+        _cache.Remove(CacheKey);
+
+        return post;
+    }
+
+    public async Task DeletePostAsync(string slug)
+    {
+        var post = await GetPostBySlugAsync(slug);
+        if (post != null && !string.IsNullOrEmpty(post.FilePath) && File.Exists(post.FilePath))
+        {
+            File.Delete(post.FilePath);
+            _cache.Remove(CacheKey);
+        }
+    }
+
     private async Task<IEnumerable<BlogPost>> GetCachedPostsAsync()
     {
         if (_cache.TryGetValue(CacheKey, out IEnumerable<BlogPost>? cachedPosts) && cachedPosts != null)

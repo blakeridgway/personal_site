@@ -1,0 +1,225 @@
+@page "/admin/blog/new"
+@page "/admin/blog/edit/{Slug}"
+@using Microsoft.AspNetCore.Authorization
+@using PersonalSite.Models
+@using PersonalSite.Services
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject IBlogService BlogService
+@inject NavigationManager Navigation
+
+<PageTitle>@(_isEditing ? "Edit Post" : "New Post") | Admin | Blake Ridgway</PageTitle>
+
+<div class="container-lg py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-pencil-square text-primary me-2"></i>@(_isEditing ? "Edit Post" : "New Post")
+            </h1>
+            <p class="text-muted mb-0">@(_isEditing ? "Update your blog post" : "Create a new blog post")</p>
+        </div>
+        <a href="/admin" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="alert @(_isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            <i class="bi @(_isError ? "bi-exclamation-triangle" : "bi-check-circle") me-2"></i>@_message
+            <button type="button" class="btn-close" @onclick="() => _message = string.Empty"></button>
+        </div>
+    }
+
+    <div class="card-glass rounded-4 p-4">
+        <EditForm Model="_model" OnValidSubmit="HandleSave" FormName="blogEditor">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Title</label>
+                        <InputText @bind-Value="_model.Title" class="form-control bg-dark text-light border-secondary"
+                                   placeholder="Post title" @oninput="OnTitleInput" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Slug</label>
+                        <InputText @bind-Value="_model.Slug" class="form-control bg-dark text-light border-secondary"
+                                   placeholder="post-slug" />
+                        <small class="text-muted">URL-friendly identifier</small>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <InputText @bind-Value="_model.Category" class="form-control bg-dark text-light border-secondary"
+                                   placeholder="e.g. Tech, Cycling" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tags</label>
+                        <InputText @bind-Value="_model.TagsInput" class="form-control bg-dark text-light border-secondary"
+                                   placeholder="tag1, tag2, tag3" />
+                        <small class="text-muted">Comma-separated</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Date</label>
+                        <InputDate @bind-Value="_model.PublishedDate" class="form-control bg-dark text-light border-secondary" />
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Excerpt</label>
+                        <InputTextArea @bind-Value="_model.Excerpt" class="form-control bg-dark text-light border-secondary"
+                                       rows="2" placeholder="Brief summary of the post..." />
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Content (Markdown)</label>
+                        <InputTextArea @bind-Value="_model.Content" class="form-control bg-dark text-light border-secondary font-monospace"
+                                       rows="20" placeholder="Write your post in Markdown..." />
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check mb-4">
+                        <InputCheckbox @bind-Value="_model.IsDraft" class="form-check-input" id="draftCheck" />
+                        <label class="form-check-label" for="draftCheck">Save as draft (won't appear on the public blog)</label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary" disabled="@_saving">
+                            @if (_saving)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            <i class="bi bi-check-lg me-2"></i>@(_isEditing ? "Update Post" : "Create Post")
+                        </button>
+                        <a href="/admin" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private BlogEditorModel _model = new();
+    private bool _isEditing;
+    private bool _saving;
+    private string _message = string.Empty;
+    private bool _isError;
+    private string? _originalFilePath;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Slug))
+        {
+            var post = await BlogService.GetPostBySlugAsync(Slug);
+            if (post != null)
+            {
+                _isEditing = true;
+                _originalFilePath = post.FilePath;
+                _model = new BlogEditorModel
+                {
+                    Title = post.Title,
+                    Slug = post.Slug,
+                    Category = post.Category,
+                    TagsInput = string.Join(", ", post.Tags),
+                    Excerpt = post.Excerpt,
+                    Content = post.Content,
+                    IsDraft = post.IsDraft,
+                    PublishedDate = post.PublishedDate
+                };
+            }
+        }
+    }
+
+    private void OnTitleInput(ChangeEventArgs e)
+    {
+        if (!_isEditing)
+        {
+            var title = e.Value?.ToString() ?? string.Empty;
+            _model.Slug = GenerateSlug(title);
+        }
+    }
+
+    private static string GenerateSlug(string title)
+    {
+        var slug = title.ToLowerInvariant();
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"\s+", "-");
+        slug = slug.Trim('-');
+        return slug;
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(_model.Title) || string.IsNullOrWhiteSpace(_model.Slug))
+        {
+            _message = "Title and slug are required.";
+            _isError = true;
+            return;
+        }
+
+        _saving = true;
+        _message = string.Empty;
+
+        try
+        {
+            var tags = string.IsNullOrWhiteSpace(_model.TagsInput)
+                ? new List<string>()
+                : _model.TagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+
+            var post = new BlogPost
+            {
+                Title = _model.Title.Trim(),
+                Slug = _model.Slug.Trim(),
+                Category = string.IsNullOrWhiteSpace(_model.Category) ? "Uncategorized" : _model.Category.Trim(),
+                Tags = tags,
+                Excerpt = _model.Excerpt?.Trim() ?? string.Empty,
+                Content = _model.Content?.Trim() ?? string.Empty,
+                IsDraft = _model.IsDraft,
+                PublishedDate = _model.PublishedDate,
+                Author = "Blake Ridgway",
+                FilePath = _originalFilePath ?? string.Empty
+            };
+
+            await BlogService.SavePostAsync(post);
+            Navigation.NavigateTo("/admin");
+        }
+        catch (Exception ex)
+        {
+            _message = $"Failed to save post: {ex.Message}";
+            _isError = true;
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private class BlogEditorModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Slug { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string TagsInput { get; set; } = string.Empty;
+        public string Excerpt { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public bool IsDraft { get; set; }
+        public DateTime PublishedDate { get; set; } = DateTime.Now;
+    }
+}

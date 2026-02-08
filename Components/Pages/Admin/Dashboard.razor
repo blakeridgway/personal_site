@@ -3,9 +3,11 @@
 @using PersonalSite.Models
 @using PersonalSite.Services
 @attribute [Authorize]
+@rendermode InteractiveServer
 @inject IBlogService BlogService
 @inject ITrafficService TrafficService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Admin Dashboard | Blake Ridgway</PageTitle>
 
@@ -91,7 +93,12 @@
                     <h2 class="h5 mb-0">
                         <i class="bi bi-journal-text text-info me-2"></i>Blog Posts
                     </h2>
-                    <span class="badge bg-primary">@_posts.Count() posts</span>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-primary">@_posts.Count() posts</span>
+                        <a href="/admin/blog/new" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>New Post
+                        </a>
+                    </div>
                 </div>
 
                 @if (_posts.Any())
@@ -118,9 +125,17 @@
                                         <td><span class="badge-stack">@post.Category</span></td>
                                         <td class="text-muted">@post.PublishedDate.ToString("MMM d, yyyy")</td>
                                         <td class="text-end">
-                                            <a href="/blog/@post.Slug" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                            <div class="d-flex gap-1 justify-content-end">
+                                                <a href="/blog/@post.Slug" class="btn btn-sm btn-outline-primary" title="View">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="/admin/blog/edit/@post.Slug" class="btn btn-sm btn-outline-info" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-danger" title="Delete" @onclick="() => DeletePost(post.Slug)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -133,9 +148,9 @@
                     <div class="text-center py-5">
                         <i class="bi bi-journal-x fs-1 text-muted mb-3"></i>
                         <p class="text-muted">No blog posts yet</p>
-                        <p class="small text-muted">
-                            Add markdown files to <code>Content/posts/</code> to create posts
-                        </p>
+                        <a href="/admin/blog/new" class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-2"></i>Create Your First Post
+                        </a>
                     </div>
                 }
             </div>
@@ -190,6 +205,16 @@
         _posts = await BlogService.GetAllPostsAsync();
         _stats = await TrafficService.GetStatsAsync(30);
         _recentViews = await TrafficService.GetRecentPageViewsAsync(10);
+    }
+
+    private async Task DeletePost(string slug)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this post?");
+        if (confirmed)
+        {
+            await BlogService.DeletePostAsync(slug);
+            _posts = await BlogService.GetAllPostsAsync();
+        }
     }
 
     private string GetTimeAgo(DateTime timestamp)

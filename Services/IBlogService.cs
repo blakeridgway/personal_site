@@ -11,4 +11,6 @@ public interface IBlogService
     Task<IEnumerable<string>> GetCategoriesAsync();
     Task<int> GetTotalCountAsync(string? category = null);
     Task<IEnumerable<BlogPost>> GetRecentPostsAsync(int count = 3);
+    Task<BlogPost> SavePostAsync(BlogPost post);
+    Task DeletePostAsync(string slug);
 }
