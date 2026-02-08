@@ -12,6 +12,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
 
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Blake Ridgway - Blog" href="/feed.xml">
+
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -54,6 +57,29 @@
                 });
             }
         });
+
+        // Reading progress bar
+        window._readingProgressHandler = null;
+        window.initReadingProgress = function() {
+            window.disposeReadingProgress();
+            var bar = document.getElementById('readingProgressBar');
+            if (!bar) return;
+            window._readingProgressHandler = function() {
+                var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                var progress = docHeight > 0 ? Math.min((window.scrollY / docHeight) * 100, 100) : 0;
+                bar.style.width = progress + '%';
+            };
+            window.addEventListener('scroll', window._readingProgressHandler, { passive: true });
+            window._readingProgressHandler();
+        };
+        window.disposeReadingProgress = function() {
+            if (window._readingProgressHandler) {
+                window.removeEventListener('scroll', window._readingProgressHandler);
+                window._readingProgressHandler = null;
+            }
+            var bar = document.getElementById('readingProgressBar');
+            if (bar) bar.style.width = '0%';
+        };
     </script>
 </body>
 

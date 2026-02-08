@@ -3,6 +3,11 @@
 @using PersonalSite.Services
 @inject IBlogService BlogService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<!-- Reading Progress Bar -->
+<div class="reading-progress-bar" id="readingProgressBar"></div>
 
 @if (_post == null)
 {
@@ -30,6 +35,22 @@ else if (_notFound)
 else
 {
     <PageTitle>@_post.Title | Blake Ridgway</PageTitle>
+    <HeadContent>
+        <meta property="og:title" content="@_post.Title" />
+        <meta property="og:description" content="@_post.Excerpt" />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="/blog/@_post.Slug" />
+        <meta property="og:site_name" content="Blake Ridgway" />
+        <meta property="article:published_time" content="@_post.PublishedDate.ToString("yyyy-MM-ddTHH:mm:ssZ")" />
+        <meta property="article:author" content="@_post.Author" />
+        @foreach (var tag in _post.Tags)
+        {
+            <meta property="article:tag" content="@tag" />
+        }
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="@_post.Title" />
+        <meta name="twitter:description" content="@_post.Excerpt" />
+    </HeadContent>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -91,7 +112,7 @@ else
                         <a href="https://github.com/blakeridgway" class="social-icon" target="_blank">
                             <i class="bi bi-github"></i>
                         </a>
-                        <a href="https://linkedin.com/in/blakeridgway" class="social-icon" target="_blank">
+                        <a href="https://linkedin.com/in/blakearidgway" class="social-icon" target="_blank">
                             <i class="bi bi-linkedin"></i>
                         </a>
                     </div>
@@ -107,11 +128,26 @@ else
 
     private BlogPost? _post;
     private bool _notFound;
+    private bool _progressInitialized;
 
     protected override async Task OnParametersSetAsync()
     {
         _post = await BlogService.GetPostBySlugAsync(Slug);
         _notFound = _post == null;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_post != null && !_progressInitialized)
+        {
+            _progressInitialized = true;
+            await JSRuntime.InvokeVoidAsync("initReadingProgress");
+        }
+    }
+
+    public void Dispose()
+    {
+        _ = JSRuntime.InvokeVoidAsync("disposeReadingProgress");
     }
 
     private string GetCategoryClass(string category)

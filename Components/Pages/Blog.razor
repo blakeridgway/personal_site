@@ -4,6 +4,16 @@
 @inject IBlogService BlogService
 
 <PageTitle>Blog | Blake Ridgway</PageTitle>
+<HeadContent>
+    <meta property="og:title" content="Blog | Blake Ridgway" />
+    <meta property="og:description" content="Deep dives into SRE practices, cloud infrastructure, DevOps automation, security, and the intersection of technology with endurance sports." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/blog" />
+    <meta property="og:site_name" content="Blake Ridgway" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Blog | Blake Ridgway" />
+    <meta name="twitter:description" content="Deep dives into SRE practices, cloud infrastructure, DevOps automation, security, and the intersection of technology with endurance sports." />
+</HeadContent>
 
 <!-- Hero Section -->
 <section class="hero-section">
@@ -27,18 +37,37 @@
 <div class="container-lg py-5">
     <div class="row g-5">
         <div class="col-lg-8">
+            <!-- Search -->
+            <div class="mb-4">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 1rem;"></i>
+                    <input type="text" class="form-control bg-card border-subtle text-light ps-5"
+                           placeholder="Search articles..."
+                           @bind="_searchTerm"
+                           @bind:event="oninput" />
+                </div>
+            </div>
+
             <section>
                 <div class="section-header">
                     <h2 class="section-title">
-                        <i class="bi bi-journal-text text-primary me-2"></i>All Articles
+                        <i class="bi bi-journal-text text-primary me-2"></i>
+                        @if (!string.IsNullOrWhiteSpace(_selectedCategory))
+                        {
+                            @:@_selectedCategory
+                        }
+                        else
+                        {
+                            @:All Articles
+                        }
                     </h2>
-                    <span class="text-muted">@_posts.Count() posts</span>
+                    <span class="text-muted">@FilteredPosts.Count() posts</span>
                 </div>
 
-                @if (_posts.Any())
+                @if (FilteredPosts.Any())
                 {
                     <div class="row g-4">
-                        @foreach (var post in _posts)
+                        @foreach (var post in FilteredPosts)
                         {
                             <div class="col-md-6">
                                 <a href="/blog/@post.Slug" class="text-decoration-none">
@@ -56,6 +85,19 @@
                                 </a>
                             </div>
                         }
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(_searchTerm) || !string.IsNullOrWhiteSpace(_selectedCategory))
+                {
+                    <div class="card-glass rounded-xl p-5 text-center">
+                        <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+                        <h3 class="h5 mb-3">No Results</h3>
+                        <p class="text-muted mb-3">
+                            No articles match your search. Try a different term or category.
+                        </p>
+                        <button class="btn btn-outline-primary" @onclick="ClearFilters">
+                            <i class="bi bi-x-circle me-2"></i>Clear Filters
+                        </button>
                     </div>
                 }
                 else
@@ -81,9 +123,12 @@
                 @if (_categories.Any())
                 {
                     <div class="d-flex flex-wrap gap-2">
+                        <span class="badge-category @(string.IsNullOrEmpty(_selectedCategory) ? "active" : "")"
+                              @onclick="() => SelectCategory(null)" style="cursor: pointer;">All</span>
                         @foreach (var category in _categories)
                         {
-                            <span class="badge-category">@category</span>
+                            <span class="badge-category @(_selectedCategory == category ? "active" : "")"
+                                  @onclick="() => SelectCategory(category)" style="cursor: pointer;">@category</span>
                         }
                     </div>
                 }
@@ -100,6 +145,9 @@
                 <p class="small text-muted mb-3">
                     Follow along for articles on cloud infrastructure, DevOps, and cycling tech.
                 </p>
+                <a href="/feed.xml" target="_blank" class="btn btn-outline-accent w-100 mb-2">
+                    <i class="bi bi-rss me-2"></i>RSS Feed
+                </a>
                 <a href="https://github.com/blakeridgway" target="_blank" class="btn btn-outline-primary w-100">
                     <i class="bi bi-github me-2"></i>Follow on GitHub
                 </a>
@@ -109,8 +157,35 @@
 </div>
 
 @code {
-    private IEnumerable<BlogPost> _posts = Enumerable.Empty<BlogPost>();
+    private IEnumerable<BlogPost> _allPosts = Enumerable.Empty<BlogPost>();
     private IEnumerable<string> _categories = Enumerable.Empty<string>();
+    private string _searchTerm = string.Empty;
+    private string? _selectedCategory;
+
+    private IEnumerable<BlogPost> FilteredPosts
+    {
+        get
+        {
+            var posts = _allPosts.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(_selectedCategory))
+            {
+                posts = posts.Where(p => p.Category.Equals(_selectedCategory, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(_searchTerm))
+            {
+                var term = _searchTerm.Trim();
+                posts = posts.Where(p =>
+                    p.Title.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    p.Excerpt.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    p.Category.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    p.Tags.Any(t => t.Contains(term, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            return posts;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,8 +194,19 @@
 
         await Task.WhenAll(postsTask, categoriesTask);
 
-        _posts = await postsTask;
+        _allPosts = await postsTask;
         _categories = await categoriesTask;
+    }
+
+    private void SelectCategory(string? category)
+    {
+        _selectedCategory = category;
+    }
+
+    private void ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedCategory = null;
     }
 
     private string GetCategoryClass(string category)

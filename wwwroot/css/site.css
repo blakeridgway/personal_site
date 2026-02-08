@@ -923,6 +923,45 @@ footer {
 }
 
 /* ============================================
+   READING PROGRESS BAR
+   ============================================ */
+
+.reading-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    z-index: 1100;
+    transition: width 0.1s ease-out;
+}
+
+/* ============================================
+   BLOG SEARCH
+   ============================================ */
+
+.form-control.bg-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: var(--text-primary) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control.bg-card::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control.bg-card:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    outline: none;
+}
+
+/* ============================================
    UTILITY CLASSES
    ============================================ */
 
