@@ -1,6 +1,4 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
+/* unused — styles live in wwwroot/css/site.css */
 
 a, .btn-link {
     color: #006bb7;

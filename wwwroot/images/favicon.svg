@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="4" fill="#050d0d"/>
+  <rect width="32" height="32" rx="4" fill="none" stroke="#00e5c3" stroke-width="1" opacity="0.4"/>
+  <!-- > prompt -->
+  <text x="3" y="21" font-family="monospace" font-size="13" font-weight="700" fill="#00e5c3">&#62;_</text>
+</svg>

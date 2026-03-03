@@ -16,215 +16,106 @@
     <meta name="twitter:description" content="Site Reliability Engineer building cloud-native infrastructure by day, cyclist exploring roads and trails by morning." />
 </HeadContent>
 
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container-lg position-relative">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="display-hero mb-4">
-                    <span class="text-gradient">Engineering</span> reliable systems,<br>
-                    chasing <span class="text-gradient">miles</span> on two wheels
-                </h1>
-                <p class="lead mb-4">
-                    Site Reliability Engineer building cloud-native infrastructure by day,
-                    cyclist exploring roads and trails by morning. Based in Oklahoma.
-                </p>
-                <div class="d-flex flex-wrap gap-3 mb-4">
-                    <a href="/about" class="btn btn-primary">
-                        <i class="bi bi-person me-2"></i>About Me
-                    </a>
-                    <a href="/biking" class="btn btn-outline-accent">
-                        <i class="bi bi-bicycle me-2"></i>Cycling Stats
-                    </a>
+<!-- Hero: Terminal Window -->
+<section style="background: var(--bg-dark); border-bottom: 1px solid var(--border-color); padding: 3.5rem 0;">
+    <div class="container-lg">
+        <div class="terminal-window" style="max-width: 680px;">
+            <div class="terminal-header">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="ms-2">blake&#64;ridgway:~</span>
+            </div>
+            <div class="terminal-body">
+                <div class="term-prompt">whoami</div>
+                <div class="term-output mb-3">Blake Ridgway &mdash; Site Reliability Engineer &amp; Cyclist</div>
+
+                <div class="term-prompt">cat bio.txt</div>
+                <div class="term-output mb-3">
+                    Engineering reliable systems, chasing miles on two wheels.<br>
+                    Based in Oklahoma. Building in the open.
                 </div>
 
-                <!-- Hero Stats Ticker -->
-                <div class="hero-stats-ticker">
-                    <div class="ticker-item">
-                        <div class="ticker-value">@_stats.Distance.ToString("N0")</div>
-                        <div class="ticker-label">Miles YTD</div>
-                    </div>
-                    <div class="ticker-item">
-                        <div class="ticker-value">@_stats.Elevation.ToString("N0")</div>
-                        <div class="ticker-label">Feet Climbed</div>
-                    </div>
-                    <div class="ticker-item">
-                        <div class="ticker-value">@_stats.Count</div>
-                        <div class="ticker-label">Rides</div>
-                    </div>
-                    <div class="ticker-item">
-                        <div class="ticker-value">@_stats.Time.ToString("N0")</div>
-                        <div class="ticker-label">Hours</div>
-                    </div>
+                <div class="term-prompt">ls stats/ <span class="term-comment"># YTD</span></div>
+                <div class="term-output mb-3">
+                    <span class="text-primary-custom me-3">@_stats.Distance.ToString("N0")mi</span><span class="text-accent me-3">@_stats.Elevation.ToString("N0")ft</span><span class="text-primary-custom me-3">@_stats.Count&nbsp;rides</span><span class="text-accent">@_stats.AvgSpeed.ToString("N1")mph&nbsp;avg</span>
                 </div>
-            </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <div class="social-icons justify-content-end mb-4">
-                    <a href="https://github.com/blakeridgway" class="social-icon" target="_blank" title="GitHub">
-                        <i class="bi bi-github"></i>
-                    </a>
-                    <a href="https://linkedin.com/in/blakearidgway" class="social-icon" target="_blank" title="LinkedIn">
-                        <i class="bi bi-linkedin"></i>
-                    </a>
-                    <a href="https://www.strava.com/athletes/57387663" class="social-icon" target="_blank" title="Strava">
-                        <i class="bi bi-strava"></i>
-                    </a>
-                    <a href="mailto:blake@blakeridgway.com" class="social-icon" title="Email">
-                        <i class="bi bi-envelope"></i>
-                    </a>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/about" class="btn btn-outline-primary btn-sm">./about</a>
+                    <a href="/biking" class="btn btn-outline-accent btn-sm">./cycling</a>
+                    <a href="/blog" class="btn btn-outline-primary btn-sm">./blog</a>
                 </div>
+
+                <div class="term-prompt mt-3 cursor-blink">&nbsp;</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Main Dashboard -->
+<!-- Main Content -->
 <div class="container-lg py-5">
-    <!-- Stats + Blog Row -->
-    <div class="row g-4 mb-5">
-        <!-- Cycling Stats Panel -->
-        <div class="col-lg-4">
+
+    <!-- Blog + Rides Row -->
+    <div class="row g-5 mb-5">
+
+        <!-- Latest Posts -->
+        <div class="col-lg-7">
             <div class="section-header">
-                <h2 class="section-title">
-                    <i class="bi bi-graph-up-arrow text-accent me-2"></i>YTD Stats
-                </h2>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="bi bi-speedometer2"></i>
-                        </div>
-                        <div class="stat-value blue">@_stats.Distance.ToString("N0")</div>
-                        <div class="stat-label">Miles</div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="bi bi-graph-up"></i>
-                        </div>
-                        <div class="stat-value green">@((_stats.Elevation / 1000).ToString("N1"))k</div>
-                        <div class="stat-label">Feet</div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="bi bi-clock"></i>
-                        </div>
-                        <div class="stat-value orange">@_stats.Time.ToString("N0")</div>
-                        <div class="stat-label">Hours</div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="bi bi-lightning"></i>
-                        </div>
-                        <div class="stat-value purple">@_stats.AvgSpeed.ToString("N1")</div>
-                        <div class="stat-label">Avg MPH</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <a href="/biking" class="btn btn-ghost w-100">
-                    View All Stats <i class="bi bi-arrow-right ms-1"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Latest Blog Posts -->
-        <div class="col-lg-8">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="bi bi-journal-text text-primary me-2"></i>Latest Posts
-                </h2>
-                <a href="/blog" class="btn btn-ghost">
-                    View All <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+                <span class="section-title">// latest posts</span>
+                <a href="/blog" class="btn btn-ghost">view all <i class="bi bi-arrow-right ms-1"></i></a>
             </div>
 
             @if (_recentPosts.Any())
             {
-                <div class="row g-3">
+                <div>
                     @foreach (var post in _recentPosts)
                     {
-                        <div class="col-12">
-                            <a href="/blog/@post.Slug" class="text-decoration-none">
-                                <div class="blog-card-compact">
-                                    <div class="blog-card-content">
-                                        <span class="blog-card-category @GetCategoryClass(post.Category)">@post.Category</span>
-                                        <h3 class="blog-card-title">@post.Title</h3>
-                                        <div class="blog-card-meta">
-                                            <span><i class="bi bi-calendar3 me-1"></i>@post.PublishedDate.ToString("MMM d, yyyy")</span>
-                                            <span><i class="bi bi-clock me-1"></i>@post.ReadTime min read</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
+                        <a href="/blog/@post.Slug" class="text-decoration-none d-block blog-list-item">
+                            <div class="blog-list-date">@post.PublishedDate.ToString("yyyy-MM-dd")</div>
+                            <div class="blog-list-title">@post.Title</div>
+                            <div class="blog-list-meta">
+                                <span class="blog-card-category @GetCategoryClass(post.Category)">@post.Category</span>
+                                <span>@post.ReadTime min read</span>
+                            </div>
+                        </a>
                     }
                 </div>
             }
             else
             {
-                <div class="card-glass rounded-xl p-5 text-center">
-                    <i class="bi bi-journal-text fs-1 text-muted mb-3 d-block"></i>
-                    <p class="text-muted mb-0">Blog posts coming soon!</p>
+                <div class="card-glass rounded-xl p-4 text-center">
+                    <p class="text-muted mb-0 font-mono">// no posts yet</p>
+                </div>
+            }
+        </div>
+
+        <!-- Recent Rides (vertical, condensed) -->
+        <div class="col-lg-5">
+            <div class="section-header">
+                <span class="section-title">// recent rides</span>
+                <a href="/biking" class="btn btn-ghost">view all <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+
+            @foreach (var activity in _recentActivities)
+            {
+                <div class="blog-list-item">
+                    <div class="blog-list-date">@activity.Date</div>
+                    <div class="blog-list-title">@activity.Name</div>
+                    <div class="blog-list-meta">
+                        <span class="text-primary-custom">@activity.Distance mi</span>
+                        <span>@activity.Elevation ft</span>
+                        <span>@activity.Duration</span>
+                    </div>
                 </div>
             }
         </div>
     </div>
 
-    <!-- Recent Activities -->
-    <section class="mb-5">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="bi bi-activity text-accent me-2"></i>Recent Rides
-            </h2>
-            <a href="/biking" class="btn btn-ghost">
-                View All <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-        </div>
-
-        <div class="activity-scroll">
-            @foreach (var activity in _recentActivities)
-            {
-                <div class="activity-card">
-                    <div class="activity-type">
-                        <i class="bi bi-bicycle"></i>
-                        Ride
-                    </div>
-                    <div class="activity-name">@activity.Name</div>
-                    <div class="activity-stats">
-                        <div class="activity-stat">
-                            <i class="bi bi-speedometer"></i>
-                            @activity.Distance mi
-                        </div>
-                        <div class="activity-stat">
-                            <i class="bi bi-graph-up"></i>
-                            @activity.Elevation ft
-                        </div>
-                        <div class="activity-stat">
-                            <i class="bi bi-clock"></i>
-                            @activity.Duration
-                        </div>
-                    </div>
-                    <div class="activity-date">@activity.Date</div>
-                </div>
-            }
-        </div>
-    </section>
-
-    <!-- Tech Projects -->
-    <section class="mb-5">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="bi bi-code-slash text-primary me-2"></i>Projects
-            </h2>
+    <!-- Projects -->
+    <section>
+        <div class="section-header mb-4">
+            <span class="section-title">// projects</span>
         </div>
 
         <div class="row g-4">
@@ -244,7 +135,7 @@
                     </div>
                     <div class="project-links">
                         <a href="/hardware" class="btn btn-ghost">
-                            View Setup <i class="bi bi-arrow-right ms-1"></i>
+                            view setup <i class="bi bi-arrow-right ms-1"></i>
                         </a>
                     </div>
                 </div>
@@ -266,7 +157,7 @@
                     </div>
                     <div class="project-links">
                         <a href="https://rideaware.org" target="_blank" class="btn btn-ghost">
-                            Visit Site <i class="bi bi-box-arrow-up-right ms-1"></i>
+                            visit site <i class="bi bi-box-arrow-up-right ms-1"></i>
                         </a>
                     </div>
                 </div>
@@ -279,7 +170,7 @@
                     </div>
                     <h3 class="project-title">ByteFort</h3>
                     <p class="project-description">
-                        Educational platform for homelabbing, privacy protection, and data sovereignty. Your digital fortress.
+                        Educational platform for homelabbing, privacy protection, and data sovereignty.
                     </p>
                     <div class="project-tech">
                         <span class="badge-tech">Self-Hosting</span>
@@ -288,55 +179,10 @@
                     </div>
                     <div class="project-links">
                         <a href="https://git.bytefort.org" target="_blank" class="btn btn-ghost">
-                            Visit Site <i class="bi bi-box-arrow-up-right ms-1"></i>
+                            visit site <i class="bi bi-box-arrow-up-right ms-1"></i>
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Links -->
-    <section>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <a href="/about" class="card-glow d-block p-4 text-decoration-none h-100">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-box bg-elevated me-3">
-                            <i class="bi bi-person text-primary"></i>
-                        </div>
-                        <div>
-                            <h3 class="h6 mb-1">About Me</h3>
-                            <p class="text-muted small mb-0">Background & experience</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="/hardware" class="card-glow d-block p-4 text-decoration-none h-100">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-box bg-elevated me-3">
-                            <i class="bi bi-pc-display text-accent"></i>
-                        </div>
-                        <div>
-                            <h3 class="h6 mb-1">My Setup</h3>
-                            <p class="text-muted small mb-0">Hardware & tools</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="/blog" class="card-glow d-block p-4 text-decoration-none h-100">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-box bg-elevated me-3">
-                            <i class="bi bi-journal-code text-primary"></i>
-                        </div>
-                        <div>
-                            <h3 class="h6 mb-1">Blog</h3>
-                            <p class="text-muted small mb-0">Tech & cycling thoughts</p>
-                        </div>
-                    </div>
-                </a>
             </div>
         </div>
     </section>

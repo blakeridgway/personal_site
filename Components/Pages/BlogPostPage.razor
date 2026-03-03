@@ -9,30 +9,33 @@
 <!-- Reading Progress Bar -->
 <div class="reading-progress-bar" id="readingProgressBar"></div>
 
-@if (_post == null)
+@if (_post == null && !_notFound)
 {
     <PageTitle>Loading... | Blake Ridgway</PageTitle>
-    <div class="container-lg py-5 text-center">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+    <div style="max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem; text-align: center;">
+        <p class="font-mono text-muted">// loading...</p>
     </div>
 }
 else if (_notFound)
 {
     <PageTitle>Not Found | Blake Ridgway</PageTitle>
-    <div class="container-lg py-5 text-center">
-        <div class="card-glass rounded-4 p-5">
-            <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
-            <h1 class="h3 mb-3">Article Not Found</h1>
-            <p class="text-muted mb-4">The article you're looking for doesn't exist or has been moved.</p>
-            <a href="/blog" class="btn btn-primary">
-                <i class="bi bi-arrow-left me-2"></i>Back to Blog
-            </a>
+    <div style="max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem;">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="ms-2">404</span>
+            </div>
+            <div class="terminal-body">
+                <div class="term-prompt">cat /blog/@Slug</div>
+                <div class="term-output mb-3" style="color: var(--data-red);">error: file not found</div>
+                <a href="/blog" class="btn btn-outline-primary btn-sm">&larr; back to blog</a>
+            </div>
         </div>
     </div>
 }
-else
+else if (_post != null)
 {
     <PageTitle>@_post.Title | Blake Ridgway</PageTitle>
     <HeadContent>
@@ -52,73 +55,63 @@ else
         <meta name="twitter:description" content="@_post.Excerpt" />
     </HeadContent>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container-lg position-relative">
-            <div class="row align-items-center">
-                <div class="col-lg-10">
-                    <a href="/blog" class="btn btn-ghost mb-4">
-                        <i class="bi bi-arrow-left me-2"></i>Back to Blog
-                    </a>
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <span class="blog-card-category @GetCategoryClass(_post.Category)">@_post.Category</span>
-                    </div>
-                    <h1 class="display-hero mb-4">@_post.Title</h1>
-                    <div class="d-flex flex-wrap gap-4 text-muted">
-                        <span><i class="bi bi-person me-2"></i>@_post.Author</span>
-                        <span><i class="bi bi-calendar3 me-2"></i>@_post.PublishedDate.ToString("MMMM d, yyyy")</span>
-                        <span><i class="bi bi-clock me-2"></i>@_post.ReadTime min read</span>
-                    </div>
+    <div style="max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem 5rem;">
+
+        <!-- Post Header -->
+        <a href="/blog" class="btn btn-ghost mb-4 d-inline-block">&larr; back</a>
+
+        <div class="mb-2">
+            <span class="blog-card-category @GetCategoryClass(_post.Category)">@_post.Category</span>
+        </div>
+
+        <h1 style="font-family: var(--font-mono); font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 700; line-height: 1.25; margin-bottom: 1rem;">
+            @_post.Title
+        </h1>
+
+        <div class="d-flex flex-wrap gap-3 mb-5" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+            <span>@_post.PublishedDate.ToString("yyyy-MM-dd")</span>
+            <span>&middot;</span>
+            <span>@_post.ReadTime min read</span>
+            <span>&middot;</span>
+            <span>@_post.Author</span>
+        </div>
+
+        <!-- Article Body -->
+        <article class="blog-content">
+            @((MarkupString)_post.HtmlContent)
+        </article>
+
+        <!-- Tags -->
+        @if (_post.Tags.Any())
+        {
+            <div class="mt-5 pt-4" style="border-top: 1px solid var(--border-color);">
+                <p class="term-comment mb-2">// tags</p>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var tag in _post.Tags)
+                    {
+                        <span class="badge-stack">@tag</span>
+                    }
                 </div>
             </div>
-        </div>
-    </section>
+        }
 
-    <!-- Main Content -->
-    <div class="container-lg py-5">
-        <div class="row g-5">
-            <div class="col-lg-8">
-                <article class="card-glass rounded-4 p-5">
-                    <div class="blog-content">
-                        @((MarkupString)_post.HtmlContent)
-                    </div>
-
-                    @if (_post.Tags.Any())
-                    {
-                        <div class="post-tags mt-5 pt-4 border-top border-dark-subtle">
-                            <h4 class="h6 mb-3">Tags</h4>
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach (var tag in _post.Tags)
-                                {
-                                    <span class="badge-stack">@tag</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                </article>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-                <div class="card-glass rounded-4 p-4 sticky-top" style="top: 80px;">
-                    <h3 class="h6 mb-3">
-                        <i class="bi bi-info-circle text-primary me-2"></i>About the Author
-                    </h3>
-                    <p class="small text-muted mb-3">
-                        Blake Ridgway is a Site Reliability Engineer focused on building resilient,
-                        observable cloud infrastructure at scale.
+        <!-- Author -->
+        <div class="mt-5 pt-4" style="border-top: 1px solid var(--border-color);">
+            <p class="term-comment mb-3">// author</p>
+            <div class="d-flex align-items-start gap-3">
+                <div>
+                    <p class="font-mono mb-1" style="color: var(--primary); font-size: 0.9rem;">@_post.Author</p>
+                    <p class="small mb-2" style="color: var(--text-secondary);">
+                        Site Reliability Engineer focused on building resilient, observable cloud infrastructure at scale.
                     </p>
                     <div class="d-flex gap-2">
-                        <a href="https://github.com/blakeridgway" class="social-icon" target="_blank">
-                            <i class="bi bi-github"></i>
-                        </a>
-                        <a href="https://linkedin.com/in/blakearidgway" class="social-icon" target="_blank">
-                            <i class="bi bi-linkedin"></i>
-                        </a>
+                        <a href="https://gitlab.com/blakeridgway" class="social-icon" target="_blank"><i class="bi bi-gitlab"></i></a>
+                        <a href="https://linkedin.com/in/blakearidgway" class="social-icon" target="_blank"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 }
 
